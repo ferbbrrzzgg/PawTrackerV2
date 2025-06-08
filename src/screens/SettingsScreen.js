@@ -95,7 +95,7 @@ export default function SettingsScreen() {
             <Ionicons name="settings" size={32} color="#6B8E23" />
           </View>
           <Text style={styles.title}>Ajustes de la App</Text>
-          <Text style={styles.subtitle}>Personaliza tu experiencia GeoNavega.</Text>
+          <Text style={styles.subtitle}>Personaliza tu experiencia PawTracker.</Text>
         </View>
 
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
