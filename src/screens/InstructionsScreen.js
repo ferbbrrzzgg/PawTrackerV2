@@ -1,11 +1,21 @@
 "use client"
 
 import { useState } from "react"
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native"
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  TouchableOpacity, 
+  ScrollView, 
+  Modal
+} from "react-native"
 import { Ionicons } from "@expo/vector-icons"
+// Change to default import
+import DeviceInstructionsPopup from "./InstructionsPopup" // Adjust the path as needed
 
 export default function InstructionsScreen() {
   const [expandedSections, setExpandedSections] = useState({})
+  const [showDevicePopup, setShowDevicePopup] = useState(false)
 
   const sections = [
     {
@@ -36,6 +46,11 @@ export default function InstructionsScreen() {
   ]
 
   const toggleSection = (sectionId) => {
+    if (sectionId === "device") {
+      setShowDevicePopup(true)
+      return
+    }
+    
     setExpandedSections((prev) => ({
       ...prev,
       [sectionId]: !prev[sectionId],
@@ -73,6 +88,15 @@ export default function InstructionsScreen() {
           ))}
         </ScrollView>
       </View>
+
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={showDevicePopup}
+        onRequestClose={() => setShowDevicePopup(false)}
+      >
+        <DeviceInstructionsPopup onClose={() => setShowDevicePopup(false)} />
+      </Modal>
     </View>
   )
 }
@@ -86,33 +110,34 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     backgroundColor: "white",
-    borderRadius: 15,
-    padding: 25,
+    borderRadius: 20,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 5,
-    marginTop: 20,
   },
   header: {
     alignItems: "center",
-    marginBottom: 30,
+    padding: 30,
+    borderBottomWidth: 1,
+    borderBottomColor: "#F0F0F0",
   },
   iconContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: "#F0F8E8",
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: "#F5F3E7",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 15,
+    marginBottom: 16,
   },
   title: {
     fontSize: 24,
-    fontWeight: "600",
+    fontWeight: "bold",
     color: "#2F4F4F",
     marginBottom: 8,
+    textAlign: "center",
   },
   subtitle: {
     fontSize: 16,
@@ -122,38 +147,35 @@ const styles = StyleSheet.create({
   },
   sectionsContainer: {
     flex: 1,
+    padding: 20,
   },
   sectionContainer: {
-    marginBottom: 8,
+    marginBottom: 12,
+    borderRadius: 12,
+    backgroundColor: "#FAFAFA",
+    overflow: "hidden",
   },
   sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#F8F6F0",
-    padding: 18,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#E8E6E0",
+    padding: 16,
+    backgroundColor: "white",
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: "500",
+    fontWeight: "600",
     color: "#2F4F4F",
     flex: 1,
   },
   sectionContent: {
-    backgroundColor: "#FAFAF8",
-    padding: 18,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-    borderWidth: 1,
-    borderTopWidth: 0,
-    borderColor: "#E8E6E0",
+    padding: 16,
+    paddingTop: 0,
+    backgroundColor: "#FAFAFA",
   },
   sectionText: {
     fontSize: 14,
-    color: "#6B8E23",
+    color: "#666",
     lineHeight: 20,
-  },
+  }
 })

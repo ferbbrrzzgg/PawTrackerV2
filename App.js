@@ -2,8 +2,6 @@ import { NavigationContainer } from "@react-navigation/native"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import { StatusBar } from "expo-status-bar"
 import { Ionicons } from "@expo/vector-icons"
-
-// Import screens
 import MapScreen from "./src/screens/MapScreen"
 import NotificationsScreen from "./src/screens/NotificationsScreen"
 import InstructionsScreen from "./src/screens/InstructionsScreen"
