@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Firebase Studio",
-    "slug": "firebase-studio-rn",
+    "name": "PawTracker",
+    "slug": "pawtracker-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -9,33 +9,20 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#FF6B35"
+      "backgroundColor": "#F5F3E7"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FF6B35"
+        "backgroundColor": "#F5F3E7"
       }
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "7e814fba-8fbd-4e6d-958c-63f806d5442b"
-      }
-    },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
-    "updates": {
-      "url": "https://u.expo.dev/7e814fba-8fbd-4e6d-958c-63f806d5442b"
     }
   }
 }
