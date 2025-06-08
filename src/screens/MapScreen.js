@@ -3,15 +3,13 @@ import React from "react"
 import MapView, {Marker} from "react-native-maps"
 import { useState, useEffect } from "react"
 import { View, Text, StyleSheet, ActivityIndicator, } from "react-native"
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function MapScreen() {
-  const insets = useSafeAreaInsets();
   const [DogLocation, SetDogLocation] = React.useState({
     latitude: -33.512863,
     longitude: -70.597444   
    })
-   
+
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -36,7 +34,6 @@ export default function MapScreen() {
     <View style={styles.container}>
       <View style={styles.mapPlaceholder}>
         <Text style={styles.mapText}>Mapa de PawTracker</Text>
-        <View style={{ paddingTop: insets.top, paddingBottom: insets.bottom}}> 
       <MapView
       style ={styles.map}
         initialRegion={{
@@ -56,7 +53,6 @@ export default function MapScreen() {
           Aquí podrás ver la ubicación de tu perro en tiempo real.
         </Text> 
       </View>
-    </View>
   )
 }
 
