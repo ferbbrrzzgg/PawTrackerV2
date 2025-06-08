@@ -33,7 +33,6 @@ export default function MapScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.mapPlaceholder}>
-        <Text style={styles.mapText}>Mapa de PawTracker</Text>
       <MapView
       style ={styles.map}
         initialRegion={{
@@ -46,7 +45,6 @@ export default function MapScreen() {
       <Marker
         coordinate={DogLocation}
         title={"Tu perro"}
-        //description={isConected ? "Conectado a Wifi" : "Usando GPS"}
         pinColor={"blue"}></Marker>
     </View>
         <Text style={styles.mapSubtext}>
