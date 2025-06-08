@@ -1,9 +1,17 @@
 "use client"
-
+import React from "react"
+import MapView, {Marker} from "react-native-maps"
 import { useState, useEffect } from "react"
-import { View, Text, StyleSheet, ActivityIndicator } from "react-native"
+import { View, Text, StyleSheet, ActivityIndicator, } from "react-native"
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function MapScreen() {
+  const insets = useSafeAreaInsets();
+  const [DogLocation, SetDogLocation] = React.useState({
+    latitude: -33.512863,
+    longitude: -70.597444   
+   })
+   
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -13,10 +21,10 @@ export default function MapScreen() {
     }, 3000)
 
     return () => clearTimeout(timer)
-  }, [])
+  }, [])  
 
   if (isLoading) {
-    return (
+    return (  
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#6B8E23" style={styles.spinner} />
         <Text style={styles.loadingText}>Cargando mapa...</Text>
@@ -28,7 +36,25 @@ export default function MapScreen() {
     <View style={styles.container}>
       <View style={styles.mapPlaceholder}>
         <Text style={styles.mapText}>Mapa de PawTracker</Text>
-        <Text style={styles.mapSubtext}>Aquí aparecerá la ubicación de tu mascota</Text>
+        <View style={{ paddingTop: insets.top, paddingBottom: insets.bottom}}> 
+      <MapView
+      style ={styles.map}
+        initialRegion={{
+            latitude: DogLocation.latitude, 
+            longitude: DogLocation.longitude,
+            longitudeDelta: 0.01,
+            latitudeDelta: 0.01
+        }}  
+      /> 
+      <Marker
+        coordinate={DogLocation}
+        title={"Tu perro"}
+        //description={isConected ? "Conectado a Wifi" : "Usando GPS"}
+        pinColor={"blue"}></Marker>
+    </View>
+        <Text style={styles.mapSubtext}>
+          Aquí podrás ver la ubicación de tu perro en tiempo real.
+        </Text> 
       </View>
     </View>
   )
@@ -77,5 +103,9 @@ const styles = StyleSheet.create({
     color: "#6B8E23",
     textAlign: "center",
     paddingHorizontal: 40,
+  },
+    map: {
+    width: "100%",
+    height: "100%"
   },
 })
