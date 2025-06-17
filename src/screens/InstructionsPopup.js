@@ -1,4 +1,3 @@
-// DeviceInstructionsPopup.js
 import React from 'react';
 import {
   View,
@@ -9,7 +8,6 @@ import {
   SafeAreaView,
 } from 'react-native';
 
-// Change this from named export to default export
 export default function DeviceInstructionsPopup({ onClose }) {
   return (
     <SafeAreaView style={styles.container}>
@@ -50,24 +48,31 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F3E7',
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
+    paddingTop: 20,
+    paddingBottom: 10,
+    paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderBottomColor: '#E0DFD5',
+    backgroundColor: '#F5F3E7',
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#2F4F4F',
+    textAlign: 'center',
+    marginBottom: 10,
   },
   backButton: {
-    padding: 8,
+    alignSelf: 'center', // o 'flex-end' si lo quieres a la derecha
+    paddingVertical: 6,
+    paddingHorizontal: 16,
+    backgroundColor: '#E8E8E8',
+    borderRadius: 8,
   },
   backButtonText: {
     color: '#6B8E23',
     fontWeight: '600',
+    fontSize: 16,
   },
   content: {
     flex: 1,
