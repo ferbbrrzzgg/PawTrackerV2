@@ -1,37 +1,11 @@
 "use client"
 import { useState } from "react"
-import { View, Text, StyleSheet, TouchableOpacity, Switch, ScrollView, Alert } from "react-native"
+import { View, Text, StyleSheet, Switch, ScrollView } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 
 export default function SettingsScreen() {
   const [pushNotifications, setPushNotifications] = useState(true)
   const [emailSummary, setEmailSummary] = useState(false)
-  const [darkMode, setDarkMode] = useState(false)
-
-  const handleSignOut = () => {
-    Alert.alert("Cerrar Sesión", "¿Estás seguro de que quieres cerrar sesión?", [
-      { text: "Cancelar", style: "cancel" },
-      { text: "Cerrar Sesión", style: "destructive", onPress: () => console.log("Sign out") },
-    ])
-  }
-
-  const ProfileSection = () => (
-    <View style={styles.section}>
-      <View style={styles.sectionHeader}>
-        <Ionicons name="person-circle" size={20} color="#6B8E23" />
-        <Text style={styles.sectionTitle}>Perfil</Text>
-      </View>
-      <TouchableOpacity style={styles.settingItem}>
-        <Text style={styles.settingText}>Editar Información del Perfil</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.settingItem}>
-        <Text style={styles.settingText}>Cambiar Contraseña</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.settingItem}>
-        <Text style={styles.settingText}>Gestionar Ubicaciones Guardadas</Text>
-      </TouchableOpacity>
-    </View>
-  )
 
   const NotificationSection = () => (
     <View style={styles.section}>
@@ -51,39 +25,6 @@ export default function SettingsScreen() {
           thumbColor={pushNotifications ? "#6B8E23" : "#f4f3f4"}
         />
       </View>
-      <View style={styles.switchItem}>
-        <View style={styles.switchContent}>
-          <Text style={styles.switchTitle}>Resúmenes por Email</Text>
-          <Text style={styles.switchSubtitle}>Recibe actividad semanal y noticias por email.</Text>
-        </View>
-        <Switch
-          value={emailSummary}
-          onValueChange={setEmailSummary}
-          trackColor={{ false: "#D3D3D3", true: "#90EE90" }}
-          thumbColor={emailSummary ? "#6B8E23" : "#f4f3f4"}
-        />
-      </View>
-    </View>
-  )
-
-  const AppearanceSection = () => (
-    <View style={styles.section}>
-      <View style={styles.sectionHeader}>
-        <Ionicons name="color-palette" size={20} color="#6B8E23" />
-        <Text style={styles.sectionTitle}>Apariencia</Text>
-      </View>
-      <View style={styles.switchItem}>
-        <View style={styles.switchContent}>
-          <Text style={styles.switchTitle}>Modo Oscuro</Text>
-          <Text style={styles.switchSubtitle}>Activa el tema oscuro para la interfaz de la app.</Text>
-        </View>
-        <Switch
-          value={darkMode}
-          onValueChange={setDarkMode}
-          trackColor={{ false: "#D3D3D3", true: "#90EE90" }}
-          thumbColor={darkMode ? "#6B8E23" : "#f4f3f4"}
-        />
-      </View>
     </View>
   )
 
@@ -99,14 +40,7 @@ export default function SettingsScreen() {
         </View>
 
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-          <ProfileSection />
           <NotificationSection />
-          <AppearanceSection />
-
-          <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-            <Ionicons name="log-out" size={20} color="white" />
-            <Text style={styles.signOutText}>Cerrar Sesión</Text>
-          </TouchableOpacity>
         </ScrollView>
       </View>
     </View>
@@ -172,19 +106,6 @@ const styles = StyleSheet.create({
     color: "#2F4F4F",
     marginLeft: 8,
   },
-  settingItem: {
-    backgroundColor: "#F8F6F0",
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: "#E8E6E0",
-  },
-  settingText: {
-    fontSize: 16,
-    color: "#6B8E23",
-    fontWeight: "400",
-  },
   switchItem: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -211,20 +132,5 @@ const styles = StyleSheet.create({
     color: "#6B8E23",
     lineHeight: 18,
   },
-  signOutButton: {
-    backgroundColor: "#DC143C",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 15,
-    borderRadius: 10,
-    marginTop: 20,
-    marginBottom: 30,
-  },
-  signOutText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "600",
-    marginLeft: 8,
-  },
 })
+

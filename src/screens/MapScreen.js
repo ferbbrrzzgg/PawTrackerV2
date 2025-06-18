@@ -1,55 +1,26 @@
 "use client"
-import React from "react"
-import MapView, {Marker, Polyline} from "react-native-maps"
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
+import MapView, { Marker, Circle } from "react-native-maps"
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native"
 
 export default function MapScreen() {
-  const [DogLocation, SetDogLocation] = React.useState({
+  const [DogLocation, SetDogLocation] = useState({
     latitude: -33.512863,
-    longitude: -70.597444   
+    longitude: -70.597444
   })
 
-  // Add direction/heading state
-  const [dogHeading, setDogHeading] = useState(45) // degrees
-  
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Simulate map loading
     const timer = setTimeout(() => {
       setIsLoading(false)
     }, 3000)
 
     return () => clearTimeout(timer)
-  }, [])  
-
-  // Function to create arrow coordinates based on heading
-  const getArrowCoordinates = (center, heading, length = 0.001) => {
-    const headingRad = (heading * Math.PI) / 180
-    
-    // Arrow tip
-    const tip = {
-      latitude: center.latitude + length * Math.cos(headingRad),
-      longitude: center.longitude + length * Math.sin(headingRad)
-    }
-    
-    // Arrow base (left and right points)
-    const baseLeft = {
-      latitude: center.latitude + (length * 0.7) * Math.cos(headingRad + 2.5),
-      longitude: center.longitude + (length * 0.7) * Math.sin(headingRad + 2.5)
-    }
-    
-    const baseRight = {
-      latitude: center.latitude + (length * 0.7) * Math.cos(headingRad - 2.5),
-      longitude: center.longitude + (length * 0.7) * Math.sin(headingRad - 2.5)
-    }
-    
-    return { tip, baseLeft, baseRight }
-  }
+  }, [])
 
   if (isLoading) {
-    return (  
+    return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#6B8E23" style={styles.spinner} />
         <Text style={styles.loadingText}>Cargando mapa...</Text>
@@ -57,61 +28,37 @@ export default function MapScreen() {
     )
   }
 
-  const arrowCoords = getArrowCoordinates(DogLocation, dogHeading)
-
   return (
     <View style={styles.container}>
       <View style={styles.mapPlaceholder}>
         <MapView
           style={styles.map}
           initialRegion={{
-            latitude: DogLocation.latitude, 
+            latitude: DogLocation.latitude,
             longitude: DogLocation.longitude,
             longitudeDelta: 0.01,
             latitudeDelta: 0.01
-          }}  
-        > 
-          {/* Main marker for dog location */}
+          }}
+        >
+          {/* Marcador del perro */}
           <Marker
             coordinate={DogLocation}
             title={"Tu perro"}
-            pinColor={"blue"}
+            pinColor="#6B8E23"
           />
-          
-          {/* Arrow using Polylines */}
-          <Polyline
-            coordinates={[arrowCoords.baseLeft, arrowCoords.tip]}
-            strokeColor="#FF0000"
-            strokeWidth={3}
-          />
-          <Polyline
-            coordinates={[arrowCoords.baseRight, arrowCoords.tip]}
-            strokeColor="#FF0000"
-            strokeWidth={3}
-          />
-          <Polyline
-            coordinates={[arrowCoords.baseLeft, arrowCoords.baseRight]}
-            strokeColor="#FF0000"
-            strokeWidth={2}
-          />
-          
-          {/* Alternative: Simple direction line */}
-          <Polyline
-            coordinates={[
-              DogLocation,
-              {
-                latitude: DogLocation.latitude + 0.002 * Math.cos((dogHeading * Math.PI) / 180),
-                longitude: DogLocation.longitude + 0.002 * Math.sin((dogHeading * Math.PI) / 180)
-              }
-            ]}
-            strokeColor="#00FF00"
-            strokeWidth={4}
+
+          {/* Círculo alrededor del pin */}
+          <Circle
+            center={DogLocation}
+            radius={50} // en metros
+            strokeColor="rgba(107, 142, 35, 0.4)"
+            fillColor="rgba(144, 238, 144, 0.3)" // verde pastel claro con transparencia
           />
         </MapView>
       </View>
       <Text style={styles.mapSubtext}>
         Aquí podrás ver la ubicación de tu perro en tiempo real.
-      </Text> 
+      </Text>
     </View>
   )
 }
@@ -147,12 +94,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-  },
-  mapText: {
-    fontSize: 24,
-    fontWeight: "600",
-    color: "#2F4F4F",
-    marginBottom: 10,
   },
   mapSubtext: {
     fontSize: 16,
