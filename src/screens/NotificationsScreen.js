@@ -1,7 +1,82 @@
-import { View, Text, StyleSheet } from "react-native"
+import React, { useEffect, useState } from "react"
+import { View, Text, StyleSheet, ActivityIndicator, Alert } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
+import * as Notifications from "expo-notifications"
+import * as Device from "expo-device"
 
 export default function NotificationsScreen() {
+  const [notificaciones, setNotificaciones] = useState([])
+  const [prevNotificaciones, setPrevNotificaciones] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  // Solicita permisos para notificaciones locales
+  useEffect(() => {
+    const pedirPermisos = async () => {
+      if (Device.isDevice) {
+        const { status } = await Notifications.requestPermissionsAsync()
+        if (status !== "granted") {
+          Alert.alert("Permisos denegados", "No se pueden mostrar notificaciones.")
+        }
+      } else {
+        Alert.alert("No compatible", "Debe usarse en un dispositivo físico.")
+      }
+    }
+    pedirPermisos()
+  }, [])
+
+  // Obtiene notificaciones de la API y lanza nuevas al sistema
+  const fetchNotifications = async () => {
+    try {
+      const response = await fetch("https://api2-beta-hazel.vercel.app/alertas") // 
+      const data = await response.json()
+
+      // Detecta si hay nuevas notificaciones
+      if (prevNotificaciones.length > 0 && data.length > prevNotificaciones.length) {
+        const nuevas = data.slice(prevNotificaciones.length)
+
+        for (const noti of nuevas) {
+          await Notifications.scheduleNotificationAsync({
+            content: {
+              title: noti.titulo,
+              body: noti.descripcion,
+              sound: "default",
+            },
+            trigger: null, // Mostrar inmediatamente
+          })
+        }
+      }
+
+      setNotificaciones(data)
+      setPrevNotificaciones(data)
+    } catch (err) {
+      console.error("Error al obtener notificaciones:", err)
+      setError("No se pudieron cargar las notificaciones.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Ejecuta fetch al inicio y luego cada 5 segundos
+  useEffect(() => {
+    fetchNotifications()
+    const interval = setInterval(fetchNotifications, 5000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const renderIcon = (tipo) => {
+    switch (tipo) {
+      case "gps":
+        return <Ionicons name="locate" size={24} color="#2F4F4F" style={styles.alertIcon} />
+      case "rastreo":
+        return <Ionicons name="paw-outline" size={24} color="#2F4F4F" style={styles.alertIcon} />
+      case "wifi":
+        return <Ionicons name="warning-outline" size={24} color="#B22222" style={styles.alertIcon} />
+      default:
+        return <Ionicons name="notifications-outline" size={24} color="#6B8E23" style={styles.alertIcon} />
+    }
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.card}>
@@ -13,13 +88,21 @@ export default function NotificationsScreen() {
           <Text style={styles.subtitle}>Mantente actualizado con alertas y noticias.</Text>
         </View>
 
-        <View style={styles.emptyState}>
-          <View style={styles.emptyIconContainer}>
-            <Ionicons name="cube-outline" size={48} color="#6B8E23" />
-          </View>
-          <Text style={styles.emptyTitle}>No hay notificaciones nuevas</Text>
-          <Text style={styles.emptySubtitle}>Vuelve más tarde para ver actualizaciones.</Text>
-        </View>
+        {isLoading ? (
+          <ActivityIndicator size="large" color="#6B8E23" />
+        ) : error ? (
+          <Text style={{ color: "red", textAlign: "center" }}>{error}</Text>
+        ) : (
+          notificaciones.map((n, index) => (
+            <View style={styles.alertBox} key={index}>
+              {renderIcon(n.tipo)}
+              <View style={styles.alertTextContainer}>
+                <Text style={styles.alertTitle}>{n.titulo}</Text>
+                <Text style={styles.alertDescription}>{n.descripcion}</Text>
+              </View>
+            </View>
+          ))
+        )}
       </View>
     </View>
   )
@@ -45,7 +128,7 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: "center",
-    marginBottom: 40,
+    marginBottom: 30,
   },
   iconContainer: {
     width: 60,
@@ -68,23 +151,32 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 22,
   },
-  emptyState: {
-    alignItems: "center",
+  alertBox: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    backgroundColor: "#F0F8FF",
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#CCE0E8",
+    marginBottom: 16,
   },
-  emptyIconContainer: {
-    marginBottom: 20,
+  alertIcon: {
+    marginRight: 12,
+    marginTop: 2,
   },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: "500",
-    color: "#2F4F4F",
-    marginBottom: 8,
-    textAlign: "center",
+  alertTextContainer: {
+    flex: 1,
   },
-  emptySubtitle: {
+  alertTitle: {
     fontSize: 16,
-    color: "#6B8E23",
-    textAlign: "center",
-    lineHeight: 22,
+    fontWeight: "600",
+    color: "#2F4F4F",
+    marginBottom: 4,
+  },
+  alertDescription: {
+    fontSize: 14,
+    color: "#2F4F4F",
+    lineHeight: 20,
   },
 })

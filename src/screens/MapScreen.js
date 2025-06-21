@@ -4,26 +4,56 @@ import MapView, { Marker, Circle } from "react-native-maps"
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native"
 
 export default function MapScreen() {
-  const [DogLocation, SetDogLocation] = useState({
-    latitude: -33.512863,
-    longitude: -70.597444
-  })
-
+  const [DogLocation, SetDogLocation] = useState(null)
+  const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
+  // Función para obtener la ubicación desde la API
+  const fetchLocation = async () => {
+    try {
+      const response = await fetch("https://api2-beta-hazel.vercel.app/ubicacion") // 
+      const data = await response.json()
+      if (data.latitude && data.longitude) {
+        SetDogLocation({
+          latitude: data.latitude,
+          longitude: data.longitude,
+        })
+        setError(null)
+      } else {
+        throw new Error("Datos de ubicación inválidos")
+      }
+    } catch (err) {
+      console.error("Error al obtener la ubicación:", err)
+      setError("No se pudo obtener la ubicación del perro.")
+    } finally {
       setIsLoading(false)
-    }, 3000)
+    }
+  }
 
-    return () => clearTimeout(timer)
+  // Llama a fetchLocation al montar el componente y cada 5 segundos
+  useEffect(() => {
+    fetchLocation()
+    const interval = setInterval(fetchLocation, 5000)
+    return () => clearInterval(interval)
   }, [])
 
-  if (isLoading) {
+  // Si aún no se ha obtenido la ubicación, mostramos un loader
+  if (isLoading && DogLocation === null) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#6B8E23" style={styles.spinner} />
-        <Text style={styles.loadingText}>Cargando mapa...</Text>
+        <Text style={styles.loadingText}>Cargando ubicación...</Text>
+      </View>
+    )
+  }
+
+  // Si se terminó la carga pero no se obtuvo la ubicación, mostramos un mensaje de error
+  if (!isLoading && DogLocation === null) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={[styles.loadingText, { color: "red" }]}>
+          {error || "No se encontró la ubicación"}
+        </Text>
       </View>
     )
   }
@@ -33,32 +63,26 @@ export default function MapScreen() {
       <View style={styles.mapPlaceholder}>
         <MapView
           style={styles.map}
-          initialRegion={{
+          region={{
             latitude: DogLocation.latitude,
             longitude: DogLocation.longitude,
+            latitudeDelta: 0.01,
             longitudeDelta: 0.01,
-            latitudeDelta: 0.01
           }}
         >
-          {/* Marcador del perro */}
-          <Marker
-            coordinate={DogLocation}
-            title={"Tu perro"}
-            pinColor="#6B8E23"
-          />
-
-          {/* Círculo alrededor del pin */}
+          <Marker coordinate={DogLocation} title={"Tu perro"} pinColor="#6B8E23" />
           <Circle
             center={DogLocation}
             radius={50} // en metros
             strokeColor="rgba(107, 142, 35, 0.4)"
-            fillColor="rgba(144, 238, 144, 0.3)" // verde pastel claro con transparencia
+            fillColor="rgba(144, 238, 144, 0.3)"
           />
         </MapView>
       </View>
       <Text style={styles.mapSubtext}>
         Aquí podrás ver la ubicación de tu perro en tiempo real.
       </Text>
+      {error && <Text style={{ color: "red", textAlign: "center", marginTop: 10 }}>{error}</Text>}
     </View>
   )
 }
@@ -103,6 +127,6 @@ const styles = StyleSheet.create({
   },
   map: {
     width: "100%",
-    height: "100%"
+    height: "100%",
   },
 })
