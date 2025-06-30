@@ -28,7 +28,7 @@ export default function NotificationsScreen() {
   // Obtiene notificaciones de la API y lanza nuevas al sistema
   const fetchNotifications = async () => {
     try {
-      const response = await fetch("https://api2-beta-hazel.vercel.app/alertas") // 
+      //const response = await fetch("https://c435-2803-c600-d20c-bd0d-9992-a400-c7b7-d89d.ngrok-free.app/alertas") // 
       const data = await response.json()
 
       // Detecta si hay nuevas notificaciones

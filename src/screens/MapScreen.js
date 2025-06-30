@@ -3,42 +3,53 @@ import React, { useState, useEffect } from "react"
 import MapView, { Marker, Circle } from "react-native-maps"
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native"
 
-export default function MapScreen() {
-  const [DogLocation, SetDogLocation] = useState(null)
-  const [error, setError] = useState(null)
+  export default function MapScreen() {
+  const [dogLocation, setDogLocation] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [lastKnownPosition, setLastKnownPosition] = useState(null)
+
+  // aquí va tu useEffect y demás lógica...
 
   // Función para obtener la ubicación desde la API
-  const fetchLocation = async () => {
+ const fetchLocation = async () => {
     try {
-      const response = await fetch("https://api2-beta-hazel.vercel.app/ubicacion") // 
+      const response = await fetch("http://8dec-190-164-212-12.ngrok-free.app/ubicaciones")
       const data = await response.json()
-      if (data.latitude && data.longitude) {
-        SetDogLocation({
-          latitude: data.latitude,
-          longitude: data.longitude,
-        })
+
+      if (data.lat && data.long) {
+        const newPosition = {
+          latitude: data.lat,
+          longitude: data.long,
+        }
+        setDogLocation(newPosition)
+        setLastKnownPosition(newPosition)
         setError(null)
+      } else if (lastKnownPosition) {
+        console.log("No nuevas coordenadas. Usando última posición conocida.")
+        setDogLocation(lastKnownPosition)
       } else {
-        throw new Error("Datos de ubicación inválidos")
+        throw new Error("Datos de ubicación inválidos y sin última conocida.")
       }
     } catch (err) {
       console.error("Error al obtener la ubicación:", err)
       setError("No se pudo obtener la ubicación del perro.")
+      if (lastKnownPosition) {
+        setDogLocation(lastKnownPosition)
+      }
     } finally {
       setIsLoading(false)
     }
   }
 
-  // Llama a fetchLocation al montar el componente y cada 5 segundos
   useEffect(() => {
     fetchLocation()
-    const interval = setInterval(fetchLocation, 5000)
+    const interval = setInterval(fetchLocation, 10000) // actualiza cada 10 seg
     return () => clearInterval(interval)
   }, [])
 
   // Si aún no se ha obtenido la ubicación, mostramos un loader
-  if (isLoading && DogLocation === null) {
+  if (isLoading && dogLocation === null) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#6B8E23" style={styles.spinner} />
@@ -48,7 +59,7 @@ export default function MapScreen() {
   }
 
   // Si se terminó la carga pero no se obtuvo la ubicación, mostramos un mensaje de error
-  if (!isLoading && DogLocation === null) {
+  if (!isLoading && dogLocation === null) {
     return (
       <View style={styles.loadingContainer}>
         <Text style={[styles.loadingText, { color: "red" }]}>
@@ -64,15 +75,15 @@ export default function MapScreen() {
         <MapView
           style={styles.map}
           region={{
-            latitude: DogLocation.latitude,
-            longitude: DogLocation.longitude,
+            latitude: dogLocation.latitude,
+            longitude: dogLocation.longitude,
             latitudeDelta: 0.01,
             longitudeDelta: 0.01,
           }}
         >
-          <Marker coordinate={DogLocation} title={"Tu perro"} pinColor="#6B8E23" />
+          <Marker coordinate={dogLocation} title={"Tu perro"} pinColor="#6B8E23" />
           <Circle
-            center={DogLocation}
+            center={dogLocation}
             radius={50} // en metros
             strokeColor="rgba(107, 142, 35, 0.4)"
             fillColor="rgba(144, 238, 144, 0.3)"
