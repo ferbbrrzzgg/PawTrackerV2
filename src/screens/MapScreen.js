@@ -14,7 +14,7 @@ import { View, Text, StyleSheet, ActivityIndicator } from "react-native"
   // Función para obtener la ubicación desde la API
  const fetchLocation = async () => {
     try {
-      const response = await fetch("http://8dec-190-164-212-12.ngrok-free.app/ubicaciones")
+      const response = await fetch("http://11f9-146-83-134-2.ngrok-free.app/ubicaciones")
       const data = await response.json()
 
       if (data.lat && data.long) {

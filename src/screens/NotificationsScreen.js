@@ -10,7 +10,6 @@ export default function NotificationsScreen() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  // Solicita permisos para notificaciones locales
   useEffect(() => {
     const pedirPermisos = async () => {
       if (Device.isDevice) {
@@ -25,24 +24,23 @@ export default function NotificationsScreen() {
     pedirPermisos()
   }, [])
 
-  // Obtiene notificaciones de la API y lanza nuevas al sistema
   const fetchNotifications = async () => {
     try {
-      //const response = await fetch("https://c435-2803-c600-d20c-bd0d-9992-a400-c7b7-d89d.ngrok-free.app/alertas") // 
+      const response = await fetch("http://11f9-146-83-134-2.ngrok-free.app/alertas")
       const data = await response.json()
+      console.log("📦 Notificaciones recibidas:", data)
 
-      // Detecta si hay nuevas notificaciones
       if (prevNotificaciones.length > 0 && data.length > prevNotificaciones.length) {
         const nuevas = data.slice(prevNotificaciones.length)
 
         for (const noti of nuevas) {
           await Notifications.scheduleNotificationAsync({
             content: {
-              title: noti.titulo,
-              body: noti.descripcion,
+              title: "Nueva Alerta",
+              body: noti.mensaje || `RSSI detectado: ${noti.rssi}`,
               sound: "default",
             },
-            trigger: null, // Mostrar inmediatamente
+            trigger: null,
           })
         }
       }
@@ -57,25 +55,11 @@ export default function NotificationsScreen() {
     }
   }
 
-  // Ejecuta fetch al inicio y luego cada 5 segundos
   useEffect(() => {
     fetchNotifications()
     const interval = setInterval(fetchNotifications, 5000)
     return () => clearInterval(interval)
   }, [])
-
-  const renderIcon = (tipo) => {
-    switch (tipo) {
-      case "gps":
-        return <Ionicons name="locate" size={24} color="#2F4F4F" style={styles.alertIcon} />
-      case "rastreo":
-        return <Ionicons name="paw-outline" size={24} color="#2F4F4F" style={styles.alertIcon} />
-      case "wifi":
-        return <Ionicons name="warning-outline" size={24} color="#B22222" style={styles.alertIcon} />
-      default:
-        return <Ionicons name="notifications-outline" size={24} color="#6B8E23" style={styles.alertIcon} />
-    }
-  }
 
   return (
     <View style={styles.container}>
@@ -95,10 +79,12 @@ export default function NotificationsScreen() {
         ) : (
           notificaciones.map((n, index) => (
             <View style={styles.alertBox} key={index}>
-              {renderIcon(n.tipo)}
+              <Ionicons name="notifications-outline" size={24} color="#6B8E23" style={styles.alertIcon} />
               <View style={styles.alertTextContainer}>
-                <Text style={styles.alertTitle}>{n.titulo}</Text>
-                <Text style={styles.alertDescription}>{n.descripcion}</Text>
+                <Text style={styles.alertTitle}>Nueva Alerta</Text>
+                <Text style={styles.alertDescription}>
+                  {n.mensaje || `RSSI detectado: ${n.rssi}`}
+                </Text>
               </View>
             </View>
           ))
